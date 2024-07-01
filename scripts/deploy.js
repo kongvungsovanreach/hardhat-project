@@ -46,17 +46,17 @@ async function run_main() {
 
     
 
-            // tUSDT -> lending transfer
+    // tUSDT -> lending transfer
     const tUSDTAmount = "80000000000000000000000000";
     USD.transfer(Lending.target, tUSDTAmount);
 
     // deployer의 tGPC 잔액 확인
     const deployerTGPCBalance = await STONE.balanceOf(deployer.address);
-    console.log("deployer's tGPC balance:", deployerTGPCBalance.toString());
+    console.log("1. deployer's tGPC balance:", deployerTGPCBalance.toString());
 
     // deployer 의 tUSDT 현재 잔액 확인
     const deployerTUSDTBalance = await USD.balanceOf(deployer.address);
-    console.log("deployer's tUSDT balance:", deployerTUSDTBalance.toString());
+    console.log("2. deployer's tUSDT balance:", deployerTUSDTBalance.toString());
 
     // 금 deposit
     const depositAmount = "10000000000000000000";
@@ -65,7 +65,7 @@ async function run_main() {
 
     // deployer의 tGPC 잔액 확인
     const deployerTGPCBalance2 = await STONE.balanceOf(deployer.address);
-    console.log("deployer's tGPC balance:", deployerTGPCBalance2.toString());
+    console.log("3. deployer's tGPC balance:", deployerTGPCBalance2.toString());
 
     // borrow
     const loanAmount = "4900000000000000000";
@@ -73,7 +73,7 @@ async function run_main() {
 
     // deployer 의 tUSDT 현재 잔액 확인
     const deployerTUSDTBalance2 = await USD.balanceOf(deployer.address);
-    console.log("deployer's tUSDT balance:", deployerTUSDTBalance2.toString());
+    console.log("4. deployer's tUSDT balance:", deployerTUSDTBalance2.toString());
 
     // repay
     USD.approve(Lending.target, loanAmount);
@@ -81,7 +81,7 @@ async function run_main() {
 
     // deployer 의 tUSDT 현재 잔액 확인
     const deployerTUSDTBalance3 = await USD.balanceOf(deployer.address);
-    console.log("deployer's tUSDT balance:", deployerTUSDTBalance3.toString());
+    console.log("5. deployer's tUSDT balance:", deployerTUSDTBalance3.toString());
 }
 
 run_main()
