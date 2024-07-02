@@ -60,5 +60,4 @@ contract Lending {
 
         emit Loaned(msg.sender, tUSDTAmount);
     }
-
 }

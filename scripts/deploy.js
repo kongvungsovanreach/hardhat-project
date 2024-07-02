@@ -7,6 +7,7 @@ require('dotenv').config();
 
 async function deployTokenContract(contractName, initialSupply) {
     //deploy RIEL contract
+    xmsg(`network name: ${hre.network.name}`)
     xmsg(`start deploying constract named: ${contractName}`);
     const Token = await hre.ethers.deployContract(contractName, [initialSupply])
         .then(res => res)
@@ -25,12 +26,12 @@ async function run_main() {
     xmsg(`deployer address: ${deployer.address}`);
     
     //deploy stone token contract
-    const STONE = await deployTokenContract('STONE', "10000000000000000000")
+    const STONE = await deployTokenContract('STONE', "100")
         .then(res => res)
         .catch(err => xerr(err))
 
     //deploy usd token contract
-    const USD = await deployTokenContract('USD', "100000000000000000000000000")
+    const USD = await deployTokenContract('USD', "1000")
         .then(res => res)
         .catch(err => xerr(err));
 
@@ -44,36 +45,43 @@ async function run_main() {
         .then((res) =>  res)
         .catch(err => xerr('error deploying contract.'));
 
-    
+    //check balance
+    const deployerSTONE = await STONE.balanceOf(deployer.address);
+    const deployerUSD = await USD.balanceOf(deployer.address);
+    xmsg(`01. deployer STONE balance: ${deployerSTONE}`)
+    xmsg(`01. deployer USD balance: ${deployerUSD}`)
+
+    const stoneDecimals = await USD.decimals()
+    console.log(stoneDecimals)
 
     // tUSDT -> lending transfer
-    const tUSDTAmount = "80000000000000000000000000";
+    const tUSDTAmount = "800";
     USD.transfer(Lending.target, tUSDTAmount);
 
     // deployer의 tGPC 잔액 확인
     const deployerTGPCBalance = await STONE.balanceOf(deployer.address);
-    console.log("1. deployer's tGPC balance:", deployerTGPCBalance.toString());
+    console.log("1. deployer's STONE balance:", deployerTGPCBalance.toString());
 
     // deployer 의 tUSDT 현재 잔액 확인
     const deployerTUSDTBalance = await USD.balanceOf(deployer.address);
-    console.log("2. deployer's tUSDT balance:", deployerTUSDTBalance.toString());
+    console.log("2. deployer's USD balance:", deployerTUSDTBalance.toString());
 
     // 금 deposit
-    const depositAmount = "10000000000000000000";
+    const depositAmount = "100";
     await STONE.approve(Lending.target, depositAmount);
     await Lending.deposit(depositAmount);
 
     // deployer의 tGPC 잔액 확인
     const deployerTGPCBalance2 = await STONE.balanceOf(deployer.address);
-    console.log("3. deployer's tGPC balance:", deployerTGPCBalance2.toString());
+    console.log("3. deployer's STONE balance:", deployerTGPCBalance2.toString());
 
     // borrow
-    const loanAmount = "4900000000000000000";
+    const loanAmount = "20";
     await Lending.borrow(loanAmount);
 
     // deployer 의 tUSDT 현재 잔액 확인
     const deployerTUSDTBalance2 = await USD.balanceOf(deployer.address);
-    console.log("4. deployer's tUSDT balance:", deployerTUSDTBalance2.toString());
+    console.log("4. deployer's USD balance:", deployerTUSDTBalance2.toString());
 
     // repay
     USD.approve(Lending.target, loanAmount);
@@ -81,7 +89,10 @@ async function run_main() {
 
     // deployer 의 tUSDT 현재 잔액 확인
     const deployerTUSDTBalance3 = await USD.balanceOf(deployer.address);
-    console.log("5. deployer's tUSDT balance:", deployerTUSDTBalance3.toString());
+    console.log("5. deployer's USD balance:", deployerTUSDTBalance3.toString());
+
+    const deployerSTONE4 = await STONE.balanceOf(deployer.address);
+    console.log("5. deployer's STONE balance:", deployerSTONE4.toString());
 }
 
 run_main()

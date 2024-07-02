@@ -11,6 +11,15 @@ module.exports = {
       //   process.env.DEPLOY_PREV_KEY || ''
       // ],
       chainId: 10304
+    },
+    baobab: {
+      url: process.env.BAOBAB_URL,
+      accounts: [
+        process.env.DEPLOY_PREV_KEY || ''
+      ],
+      chainId: 1001,
+      gas: 50000000,
+      gasPrice: 250000000000
     }
   }
 }
