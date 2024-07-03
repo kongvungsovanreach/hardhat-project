@@ -8,6 +8,7 @@ class User {
         this.email = user.email
         this.password = user.password
         this.name = user.name
+        this.private_key = user.private_key
     }
 }
 

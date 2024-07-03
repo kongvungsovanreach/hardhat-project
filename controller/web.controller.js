@@ -7,7 +7,7 @@ require('dotenv').config({ path: "../env_files/dapp.env"});
 /* Get dashboard for user */
 exports.getDashboard = (req, res, next) => {
     res.render('index', {
-      user: req.user[0],
+      // user: req.user[0],
       title: process.env.SITE_NAME
     });
     // Coin.findAllTradingCoins(async (err, coins) => {

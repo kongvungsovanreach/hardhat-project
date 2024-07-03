@@ -10,7 +10,12 @@ module.exports = {
       // accounts: [
       //   process.env.DEPLOY_PREV_KEY || ''
       // ],
-      chainId: 10304
+      account: {
+        mnemonic: process.env.SEED_PHRASE
+      },
+      chainId: 1337,
+      // gas: 50000000,
+      // gasPrice: 250000000000
     },
     baobab: {
       url: process.env.BAOBAB_URL,

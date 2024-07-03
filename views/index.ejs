@@ -3,10 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    
+    <script type="module">
+        // import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js";
+        // const { ethers } = require("ethers");
+        import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
+
+        // connectToMetaMask function
+        const ConnectToMetaMask = async () => {
+            try {
+            // Check if MetaMask is installed
+            if (window.ethereum) {
+                // Request account access
+                const Accounts = await window.ethereum.request({
+                method: 'eth_requestAccounts',
+                });
+
+                // setAddress(Accounts[0]);
+                console.log('Connected to MetaMask!', Accounts);
+            } else {
+                console.error(
+                'MetaMask not found. Please install MetaMask to use this application.',
+                );
+            }
+            } catch (error) {
+            console.error(error);
+            }
+        }
+
+        async function disconnectFromMetaMask() {
+            try {
+            // Check if MetaMask is installed
+            if (window.ethereum) {
+                // Disconnect from MetaMask
+                await window.ethereum.request({
+                method: 'wallet_requestPermissions',
+                params: [{ eth_accounts: {} }],
+                });
+                console.log('Disconnected from MetaMask!');
+            } else {
+                console.error(
+                'MetaMask not found. Please install MetaMask to use this application.',
+                );
+            }
+            } catch (error) {
+            console.error(error);
+            }
+        }
+        try {
+            if (window.ethereum) {
+                const provider = new ethers.providers.JsonRpcProvider(url, network);
+
+                // const Contract = new ethers.Contract(contractAddress, IncrementDecrement.abi, Signer);
+
+                // const Tx = await Contract.decrement();
+                // const TxRecit = await Tx.wait();
+                // console.log('after :', TxRecit);
+            } else {
+                console.error(
+                'MetaMask not found. Please install MetaMask to use this application.',
+                );
+            }
+            } catch (error) {
+            console.log(error);
+            alert(error);
+        }
+
+    </script>
 </head>
 <body>
-    <h1>Hello world!! <%= user.email %></h1>
-    
+
 </body>
 </html>
