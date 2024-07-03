@@ -4,6 +4,10 @@
   "main": "index.js",
   "author": "KONG Vungsovanreach",
   "license": "MIT",
+  "scripts": {
+    "test": "npm test bin/www",
+    "start": "nodemon bin/www"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",
@@ -23,6 +27,10 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
-    "dotenv": "^16.4.5"
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "nodemon": "^3.1.4"
   }
 }
