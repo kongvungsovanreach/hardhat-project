@@ -1,0 +1,17 @@
+[
+  {
+    "email": "kvsovanreach@stone.com",
+    "password": "$2a$12$6ESbYXVi18bB7MGeN.7xzupFqdex.7eP4ypIs5CUfiFThegsV0a5W",
+    "private_key": ""
+  },
+  {
+    "email": "admin@stone.com",
+    "password": "$2a$12$euRyjUBpPOcexH2pci8pJuur5j5V1Kf/UKKk95qQuihoWmV21w3wW",
+    "private_key": ""
+  },
+  {
+    "email": "newuser@stone.com",
+    "password": "$2b$12$1a6.ZB..yvTEobvVNczaie23jOI0tqJSC8Gu57o8h7Qc0rkHNaPze",
+    "private_key": "0x18bbc00056648e8599486decc5e3caa511c65614a3ba50116c8aebf5579a8280"
+  }
+]
