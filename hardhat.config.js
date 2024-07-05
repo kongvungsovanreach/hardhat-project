@@ -15,8 +15,8 @@ module.exports = {
       //   mnemonic: process.env.SEED_PHRASE
       // },
       chainId: 31337,
-      // gas: 50000000,
-      // gasPrice: 250000000000
+      gas: 400000000,
+      gasPrice: 5000000000
     },
     baobab: {
       url: process.env.BAOBAB_URL,

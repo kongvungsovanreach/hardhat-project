@@ -7,6 +7,9 @@ contract STONE is ERC20 {
     constructor(uint256 initialSupply) ERC20('Stone Coin', 'STONE') {
         _mint(msg.sender, initialSupply);
     }
+    function decimals() public pure override returns (uint8) {
+        return 18;
+    }
 }
 
 contract USD is ERC20 {

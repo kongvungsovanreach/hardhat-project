@@ -17,3 +17,30 @@
 #balance-table th, #balance-table td {
     text-align: center;
 }
+
+#balance-table th {
+    border: none;
+}
+
+#balance-table-wrapper {
+    border: 2px solid #2e815a;
+    border-radius: 20px;
+    padding-top: 1em;
+}
+
+#transaction-btn-wrapper {
+    margin-top: 2em;
+    display: flex;
+}
+
+#transaction-btn-wrapper button {
+    margin: auto;
+}
+
+#transaction-wrapper {
+    margin-top: 2em;
+}
+
+#borrow-amount {
+    text-align: center;
+}

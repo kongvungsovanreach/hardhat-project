@@ -27,8 +27,8 @@ exports.checkBalance = async (address) => {
     const stoneBalance = await STONE.balanceOf(address);
     const usdBalance = await USD.balanceOf(address);
     return {
-        stone: stoneBalance.toString(),
-        usd: usdBalance.toString()
+        stone: stoneBalance.toLocaleString(),
+        usd: usdBalance.toLocaleString()
     }
 }
 

@@ -1,4 +1,10 @@
 $(document).ready(async () => {
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log(provider)
+
+
+    document.getElementById("borrow-amount").addEventListener("input", handleInputChange);
     //check metamask connection
     await metamaskConnected().then(res => {
         if (res) {
@@ -12,7 +18,7 @@ $(document).ready(async () => {
     });
 
     //connect button handler function
-    const connectMetamaskBtn = $('#connect-mm-btn')
+    const connectMetamaskBtn = $('#connect-mm-btn');
     connectMetamaskBtn.on('click', () => {
         connectToMetaMask().then(res => {
             $('.not-connect-msg').hide();
@@ -22,10 +28,18 @@ $(document).ready(async () => {
     })
 
     //disconnect button handler function
-    const disconnectMetamaskBtn = $('#disconnect-mm-btn')
+    const disconnectMetamaskBtn = $('#disconnect-mm-btn');
     disconnectMetamaskBtn.on('click', () => {
         // disconnectFromMetaMask().then(res => {}).catch(err => {})
         showToast('[msg]: user must disconnect using extension itself.', '#00ff00');
+    })
+
+    //borrow button handler function
+    const borrowBtn = $('#borrow-btn');
+    borrowBtn.on('click', () => {
+        let borrowAmount = $('#borrow-amount').val();
+        borrowAmount = parseFloat(borrowAmount.replace(/,/g, ''));
+        
     })
 })
 
@@ -99,4 +113,20 @@ async function disconnectFromMetaMask() {
     } catch (error) {
         showToast('[err]: error disconnecting account from metamask.');
     }
+}
+
+// Function to format number with commas
+function formatNumberWithCommas(number) {
+    // Convert number to string and split into parts
+    let parts = number.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // Join parts and return formatted number
+    return parts.join(".");
+}
+
+// Function to handle input change
+function handleInputChange() {
+    let inputElement = document.getElementById("borrow-amount");
+    let value = inputElement.value.replace(/,/g, ""); // Remove existing commas
+    inputElement.value = formatNumberWithCommas(value); // Format with commas
 }

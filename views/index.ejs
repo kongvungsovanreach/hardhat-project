@@ -1,52 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="module">
 
     </script>
 </head>
+
 <body>
     <div class="container" id="top-container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <div class="content">
-                    <h2 class="text-center">Hello, <%= user.email %></h2>
+                    <h2 class="text-center">Hello, <%= user.email %>
+                    </h2>
                     <p class="text-center not-connect-msg">You have not connect to the wallet yet.</p>
                     <p class="text-center not-connect-msg">Connect to Metamask to continue!</p>
                     <div id="btn-wrapper">
                         <button class="btn btn-primary" id="connect-mm-btn">Connect to Metamask</button>
                         <button class="btn btn-primary" id="disconnect-mm-btn">Disonnect from Metamask</button>
                     </div>
-                </div>             
+                </div>
             </div>
         </div>
         <div class="row" id="transaction-wrapper">
-            <div class="col-md-8 offset-md-2">
+            <div class="col-md-8 offset-md-2" id="balance-table-wrapper">
                 <h4 class="text-center">My Balance</h4>
                 <table class="table" id="balance-table">
                     <thead>
                         <tr>
-                            <th>STONE</th>
-                            <th>USD</th>
+                            <th scope="col" class="col-1">STONE</th>
+                            <th scope="col" class="col-1">USD</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><%= balance.stone %></td>
-                            <td><%= balance.usd %></td>
+                            <td>
+                                <%= balance.stone %>
+                            </td>
+                            <td>
+                                <%= balance.usd %>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+        <div class="col-md-6 offset-md-3" id="transaction-wrapper">
+            <h3 class="text-center">Transaction (Borrowing)</h3>
+            <input type="text" class="form-control" id="borrow-amount">
+            <div id="transaction-btn-wrapper">
+                <button class="btn btn-success" id="borrow-btn">Borrow USD</button>
+            </div>
+        </div>
     </div>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.5.4/dist/ethers.min.js"></script>
 </body>
+
 </html>
