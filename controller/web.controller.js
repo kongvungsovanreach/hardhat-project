@@ -2,23 +2,21 @@
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const User = require('../model/user');
-require('dotenv').config({ path: "../env_files/dapp.env"});
+const web3Service = require('../service/web3Service.service');
+require('dotenv').config({ path: "../env_files/dapp.env" });
 
 /* Get dashboard for user */
-exports.getDashboard = (req, res, next) => {
-    res.render('index', {
-      // user: req.user[0],
-      title: process.env.SITE_NAME
-    });
-    // Coin.findAllTradingCoins(async (err, coins) => {
-    //   await fetchPrice(coins).then(tempCoins => {
-    //     res.render('index', {
-    //       title: 'Crypto Monitoring',
-    //       coins: tempCoins
-    //     });
-    //   })
-    // })
-}  
+exports.getDashboard = async (req, res, next) => {
+  const balance = await web3Service.checkBalance('0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199');
+  console.log(balance)
+  res.render('index', {
+    user: {
+      email: 'kongvungsovanreach'
+    },
+    balance: balance,
+    title: process.env.SITE_NAME
+  });
+}
 
 /* Dislay login page */
 exports.getLoginPage = (req, res, next) => {
@@ -52,9 +50,9 @@ exports.signupAction = async (req, res, next) => {
     private_key: req.body.private_key
   };
   await User.addNew(newUser, async (err, user) => {
-    if(!err) {
+    if (!err) {
       res.redirect('/login');
-    }else {
+    } else {
       console.log('error signup!')
     }
   })

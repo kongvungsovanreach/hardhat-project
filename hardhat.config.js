@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-ethers");
 require('dotenv').config({ path: "./env_files/hardhat.env"})
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -10,10 +11,10 @@ module.exports = {
       // accounts: [
       //   process.env.DEPLOY_PREV_KEY || ''
       // ],
-      account: {
-        mnemonic: process.env.SEED_PHRASE
-      },
-      chainId: 1337,
+      // account: {
+      //   mnemonic: process.env.SEED_PHRASE
+      // },
+      chainId: 31337,
       // gas: 50000000,
       // gasPrice: 250000000000
     },

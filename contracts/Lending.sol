@@ -28,7 +28,7 @@ contract Lending {
 
     function deposit(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
-        require(STONE.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        require(STONE.transferFrom(msg.sender, address(this), amount), "Transfer faile");
 
         tGPCBalances[msg.sender] += amount;
         emit Deposited(msg.sender, amount);

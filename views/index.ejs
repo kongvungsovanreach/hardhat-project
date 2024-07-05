@@ -3,75 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="module">
-        // import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js";
-        // const { ethers } = require("ethers");
-        import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
-
-        // connectToMetaMask function
-        const ConnectToMetaMask = async () => {
-            try {
-            // Check if MetaMask is installed
-            if (window.ethereum) {
-                // Request account access
-                const Accounts = await window.ethereum.request({
-                method: 'eth_requestAccounts',
-                });
-
-                // setAddress(Accounts[0]);
-                console.log('Connected to MetaMask!', Accounts);
-            } else {
-                console.error(
-                'MetaMask not found. Please install MetaMask to use this application.',
-                );
-            }
-            } catch (error) {
-            console.error(error);
-            }
-        }
-
-        async function disconnectFromMetaMask() {
-            try {
-            // Check if MetaMask is installed
-            if (window.ethereum) {
-                // Disconnect from MetaMask
-                await window.ethereum.request({
-                method: 'wallet_requestPermissions',
-                params: [{ eth_accounts: {} }],
-                });
-                console.log('Disconnected from MetaMask!');
-            } else {
-                console.error(
-                'MetaMask not found. Please install MetaMask to use this application.',
-                );
-            }
-            } catch (error) {
-            console.error(error);
-            }
-        }
-        try {
-            if (window.ethereum) {
-                const provider = new ethers.providers.JsonRpcProvider(url, network);
-
-                // const Contract = new ethers.Contract(contractAddress, IncrementDecrement.abi, Signer);
-
-                // const Tx = await Contract.decrement();
-                // const TxRecit = await Tx.wait();
-                // console.log('after :', TxRecit);
-            } else {
-                console.error(
-                'MetaMask not found. Please install MetaMask to use this application.',
-                );
-            }
-            } catch (error) {
-            console.log(error);
-            alert(error);
-        }
 
     </script>
 </head>
 <body>
-
+    <div class="container" id="top-container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="content">
+                    <h2 class="text-center">Hello, <%= user.email %></h2>
+                    <p class="text-center not-connect-msg">You have not connect to the wallet yet.</p>
+                    <p class="text-center not-connect-msg">Connect to Metamask to continue!</p>
+                    <div id="btn-wrapper">
+                        <button class="btn btn-primary" id="connect-mm-btn">Connect to Metamask</button>
+                        <button class="btn btn-primary" id="disconnect-mm-btn">Disonnect from Metamask</button>
+                    </div>
+                </div>             
+            </div>
+        </div>
+        <div class="row" id="transaction-wrapper">
+            <div class="col-md-8 offset-md-2">
+                <h4 class="text-center">My Balance</h4>
+                <table class="table" id="balance-table">
+                    <thead>
+                        <tr>
+                            <th>STONE</th>
+                            <th>USD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><%= balance.stone %></td>
+                            <td><%= balance.usd %></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

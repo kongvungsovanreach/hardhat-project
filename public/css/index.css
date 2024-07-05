@@ -1,0 +1,19 @@
+#top-container, #transaction-wrapper {
+    margin-top: 2em;
+}
+
+#btn-wrapper {
+    display: flex;
+}
+
+#btn-wrapper button {
+    margin: auto;
+}
+
+#disconnect-mm-btn {
+    display: none;
+}
+
+#balance-table th, #balance-table td {
+    text-align: center;
+}
