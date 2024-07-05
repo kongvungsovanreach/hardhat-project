@@ -9,11 +9,14 @@ const RPC_URL = 'http://localhost:8545';
 async function main() {
     try {
         const provider = new ethers.JsonRpcProvider(RPC_URL);
-        const signer = await provider.getSigner()
-        const contract = new ethers.Contract(usd, usdContractAbi, signer);
-        await contract.transfer(aliceAddress, 4560000000000000)
-        const balance = await contract.balanceOf(aliceAddress);
-        console.log(balance)
+        const signer = await provider.getSigner();
+        const STONE = new ethers.Contract(stone, stoneContractAbi, signer);
+        const USD = new ethers.Contract(usd, usdContractAbi, signer);
+        await STONE.transfer(aliceAddress, 4560000000000000);
+        await USD.transfer(aliceAddress, 354000000000);
+        const stoneBalance = await STONE.balanceOf(aliceAddress);
+        const usdBalance = await USD.balanceOf(aliceAddress);
+        console.log(stoneBalance, '   ', usdBalance);
     } catch (error) {
         console.error(error);
         process.exit(1);

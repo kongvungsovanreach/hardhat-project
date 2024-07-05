@@ -1,16 +1,22 @@
 $(document).ready(async () => {
+    let activeAccount = await getCurrentAccount();
+    // const balance = await getBalance('stone', '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199');
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log(provider)
 
 
+
+
+
+    $('span#active-account-address').text(activeAccount ? activeAccount : '0x...');
     document.getElementById("borrow-amount").addEventListener("input", handleInputChange);
+
     //check metamask connection
     await metamaskConnected().then(res => {
         if (res) {
             $('#disconnect-mm-btn').show();
             $('#connect-mm-btn').hide();
             $('.not-connect-msg').hide();
+            accountChangeListener();
         } else {
             $('#disconnect-mm-btn').hide();
             $('#connect-mm-btn').show();
@@ -19,8 +25,8 @@ $(document).ready(async () => {
 
     //connect button handler function
     const connectMetamaskBtn = $('#connect-mm-btn');
-    connectMetamaskBtn.on('click', () => {
-        connectToMetaMask().then(res => {
+    connectMetamaskBtn.on('click', async () => {
+        await connectToMetaMask().then(res => {
             $('.not-connect-msg').hide();
         }).catch(err => {
 
@@ -31,17 +37,55 @@ $(document).ready(async () => {
     const disconnectMetamaskBtn = $('#disconnect-mm-btn');
     disconnectMetamaskBtn.on('click', () => {
         // disconnectFromMetaMask().then(res => {}).catch(err => {})
-        showToast('[msg]: user must disconnect using extension itself.', '#00ff00');
+        showToast('[msg]: user must disconnect using extension itself.', '#28a745');
     })
 
     //borrow button handler function
     const borrowBtn = $('#borrow-btn');
-    borrowBtn.on('click', () => {
+    borrowBtn.on('click', async () => {
         let borrowAmount = $('#borrow-amount').val();
         borrowAmount = parseFloat(borrowAmount.replace(/,/g, ''));
-        
+        await borrow(activeAccount, borrowAmount)
     })
 })
+
+//add acount change listener
+const accountChangeListener = () => {
+    // Listen for account changes
+    window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+            console.log('No accounts available');
+        } else {
+            // Update the current account
+            activeAccount = accounts[0];
+            $('span#active-account-address').text(activeAccount);
+            console.log('Account changed:', activeAccount);
+        }
+    });
+}
+
+//get current active account
+const getCurrentAccount = async () => {
+    let accounts = [];
+    if (await metamaskConnected()) {
+        try {
+            //check if MetaMask is installed
+            if (await metamaskInstalled()) {
+                //request account access
+                accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts',
+                });
+            } else {
+                showToast('[err]: metamask is not installed.');
+            }
+        } catch (error) {
+            showToast('[err]: error retrieving account from metamask.');
+        }
+    } else {
+        showToast('[err]: metamask is not connected.');
+    }
+    return accounts.length ? accounts[0] : null
+}
 
 //show toast message
 const showToast = (msg, bgColor = '#ff0000') => {
@@ -59,8 +103,9 @@ const metamaskInstalled = async () => {
 
 //check if metamask is connected
 const metamaskConnected = async () => {
-    if (!metamaskInstalled) {
+    if (! await metamaskInstalled()) {
         showToast('[msg]: metamask is not installed.');
+        return false;
     } else {
         const isConnected = await window.ethereum.request({
             method: 'eth_accounts'
@@ -74,21 +119,25 @@ const metamaskConnected = async () => {
     }
 }
 
+//function for connecting to metamask
 const connectToMetaMask = async () => {
     let accounts = []
     try {
         //check if MetaMask is installed
-        if (metamaskInstalled) {
+        if (await metamaskInstalled()) {
             //request account access
             accounts = await window.ethereum.request({
                 method: 'eth_requestAccounts',
             });
             $('#disconnect-mm-btn').show();
             $('#connect-mm-btn').hide();
+            $('span#active-account-address').text(accounts[0]);
+            accountChangeListener();
         } else {
             showToast('[err]: metamask is not installed.');
         }
     } catch (error) {
+        console.log(error)
         showToast('[err]: error retrieving account from metamask.');
     }
     return accounts
@@ -96,8 +145,8 @@ const connectToMetaMask = async () => {
 
 async function disconnectFromMetaMask() {
     try {
-        if (metamaskConnected) {
-            if (metamaskConnected) {
+        if (await metamaskInstalled()) {
+            if (await metamaskConnected()) {
                 await window.ethereum.request({
                     method: 'wallet_requestPermissions',
                     params: [{ eth_accounts: {} }],
