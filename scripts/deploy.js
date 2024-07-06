@@ -34,12 +34,14 @@ async function run_main() {
     xmsg(`deployer address: ${deployer.address}`);
 
     //deploy stone token contract
-    const STONE = await deployTokenContract('STONE', "10000000000000000000000000")
+    const stoneInitialSupply = ethers.parseUnits('1000000', 18).toString();
+    const STONE = await deployTokenContract('STONE', stoneInitialSupply)
         .then(res => res)
         .catch(err => xerr(err))
 
     //deploy usd token contract
-    const USD = await deployTokenContract('USD', "9000000000000000")
+    const usdInitialSupply = ethers.parseUnits('10000', 18).toString();
+    const USD = await deployTokenContract('USD', usdInitialSupply)
         .then(res => res)
         .catch(err => xerr(err));
 
@@ -52,30 +54,48 @@ async function run_main() {
     await Lending.waitForDeployment()
         .then((res) =>  res)
         .catch(err => xerr('error deploying contract.'));
-        0x5FbDB2315678afecb367f032d93F642f64180aa3
+    xmsg(`contract deployed to addess "${Lending.target}"`);
+    
     const getBalance = async (pretext, address) => {
         const usdBalance = await USD.balanceOf(address);
         const stoneBalance = await STONE.balanceOf(address);
         xmsg(`${pretext} => USD: ${usdBalance.toString()} | STONE: ${stoneBalance}`)
     }
 
-    //transfer USD to Lending
-    await USD.transfer(Lending.target, 70000000)
-    await getBalance('01. Lending', Lending.target)
-
+    //init balance for borrower
     const ALICE = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+    const borrowerSTONE = ethers.parseUnits('25000', 18).toString();
+    const borrowerUSD = ethers.parseUnits('3600', 18).toString();
+    await STONE.transfer(ALICE, borrowerSTONE).then(res =>  {
+        // console.log(res)
+    }).catch(err => {
+        console.log(err)
+    })
+    await USD.transfer(ALICE, borrowerUSD).then(res =>  {
+        // console.log(res)
+    }).catch(err => {
+        console.log(err)
+    })
 
-    //deposit STONE to ALICE
-    await STONE.transfer(ALICE, "8777000000")
-    await getBalance('02. ALICE', ALICE)
+    //transfer USD to Lending
+    // const usdAmount = ethers.parseUnits('3600', 18).toString();
+    // await USD.transfer(Lending.target, usdAmount)
+    // await getBalance('01. Lending', Lending.target)
 
-    //ALICE borrow USD
-    // await USD.approve(Lending.target, "200")
-    // await Lending.deposit("200").catch(err=> {
-    //         console.log(err)
-    //     }); 
+    // const ALICE = "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199";
 
-    await getBalance('03', ALICE)
+    // //deposit STONE to ALICE
+    // const stoneAmount = ethers.parseUnits('25000', 18).toString();
+    // await STONE.transfer(ALICE, stoneAmount)
+    // await getBalance('02. ALICE', ALICE)
+
+    // //ALICE borrow USD
+    // // await USD.approve(Lending.target, "200")
+    // // await Lending.deposit("200").catch(err=> {
+    // //         console.log(err)
+    // //     }); 
+
+    // await getBalance('03', ALICE)
 
     // await STONE.transfer(ALICE, "2400")
     // console.log('01. ALICE STONE balance: ', await STONE.balanceOf(ALICE))

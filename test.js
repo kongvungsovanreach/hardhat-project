@@ -12,8 +12,8 @@ async function main() {
         const signer = await provider.getSigner();
         const STONE = new ethers.Contract(stone, stoneContractAbi, signer);
         const USD = new ethers.Contract(usd, usdContractAbi, signer);
-        await STONE.transfer(aliceAddress, 4560000000000000);
-        await USD.transfer(aliceAddress, 354000000000);
+        await STONE.transfer(aliceAddress, 345000 ** 18);
+        await USD.transfer(aliceAddress, 5000 ** 18);
         const stoneBalance = await STONE.balanceOf(aliceAddress);
         const usdBalance = await USD.balanceOf(aliceAddress);
         console.log(stoneBalance, '   ', usdBalance);

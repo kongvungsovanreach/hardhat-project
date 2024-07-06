@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 // Uncomment this line to use console.log
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -28,7 +28,7 @@ contract Lending {
 
     function deposit(uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
-        require(STONE.transferFrom(msg.sender, address(this), amount), "Transfer faile");
+        require(STONE.transferFrom(msg.sender, address(this), amount), "Transfer fail");
 
         tGPCBalances[msg.sender] += amount;
         emit Deposited(msg.sender, amount);
@@ -36,6 +36,9 @@ contract Lending {
 
     function borrow(uint256 tUSDTAmount) external {
         uint256 requiredCollateral = getCollateralAmount(tUSDTAmount);
+        console.log(tUSDTAmount);
+        console.log(requiredCollateral);
+        console.log(tGPCBalances[msg.sender]);
         require(tGPCBalances[msg.sender] >= requiredCollateral, "Not enough collateral");
 
         tGPCBalances[msg.sender] -= requiredCollateral;
