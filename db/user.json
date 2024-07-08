@@ -2,16 +2,16 @@
   {
     "email": "kvsovanreach@stone.com",
     "password": "$2a$12$6ESbYXVi18bB7MGeN.7xzupFqdex.7eP4ypIs5CUfiFThegsV0a5W",
-    "private_key": ""
+    "address": "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
   },
   {
     "email": "admin@stone.com",
     "password": "$2a$12$euRyjUBpPOcexH2pci8pJuur5j5V1Kf/UKKk95qQuihoWmV21w3wW",
-    "private_key": ""
+    "address": ""
   },
   {
     "email": "newuser@stone.com",
     "password": "$2b$12$1a6.ZB..yvTEobvVNczaie23jOI0tqJSC8Gu57o8h7Qc0rkHNaPze",
-    "private_key": "0x18bbc00056648e8599486decc5e3caa511c65614a3ba50116c8aebf5579a8280"
+    "address": "0x18bbc00056648e8599486decc5e3caa511c65614a3ba50116c8aebf5579a8280"
   }
 ]

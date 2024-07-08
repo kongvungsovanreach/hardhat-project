@@ -11,10 +11,9 @@ const TOKEN_ABI = [
     "function symbol() view returns (string)",
     "function decimals() view returns (uint8)",
     "function deposit(uint256 amount) external",
-    "function borrow(uint256 tUSDTAmount) external",
+    "function borrow(uint256 USDAmount) external",
+    "function repay(uint256 USDAmount) external",
     "function approve(address spender, uint256 value) public returns (bool)",
-    
-    // Get the account balance
     "function balanceOf(address) view returns (uint256)",
     "function transfer(address to, uint256 value) public returns (bool)"
 ];
@@ -23,10 +22,10 @@ const STONE = new ethers.Contract(STONE_TOKEN_ADDRESS, TOKEN_ABI, signer);
 const USD = new ethers.Contract(USD_TOKEN_ADDRESS, TOKEN_ABI, signer);
 const LENDING = new ethers.Contract(LENDING_TOKEN_ADDRESS, TOKEN_ABI, signer);
 
-async function getBalance(token, address){
+async function getBalance(token, address) {
     const DECIMALS = await STONE.decimals();
     let balance = 0;
-    switch(token){
+    switch (token) {
         case 'stone':
             balance = await STONE.balanceOf(address);
             break;
@@ -42,19 +41,36 @@ async function getBalance(token, address){
 }
 
 async function borrow(myAddress, usdAmount) {
-    // console.log(await getBalance('stone' ,LENDING_TOKEN_ADDRESS));
-    // console.log(await getBalance('usd', LENDING_TOKEN_ADDRESS))
-    const depositAmount = ethers.utils.parseUnits('5000', 18).toString();
-    console.log('aaa')
-    await STONE.approve(LENDING_TOKEN_ADDRESS, depositAmount);
-    console.log('bbbb')
-    await LENDING.deposit(depositAmount);
-    console.log('cccc')
-    // await LENDING.borrow(usdAmount);
-    // await USD.transfer(LENDING_TOKEN_ADDRESS, 50000);
-    // console.log(await getBalance('usd', LENDING_TOKEN_ADDRESS))
+    //calcualte collateral amount for a specific USD you want to borrow
+    let requiredCollateral = cal_collateral(usdAmount.toString()).toString();
+    const depositAmount = ethers.utils.parseUnits(requiredCollateral, 18).toString();
+
+    //approve the deposit STONE (according to collateral) to Lending contract
+    const approveRes = await STONE.approve(LENDING_TOKEN_ADDRESS, depositAmount)
+    await approveRes.wait();
+    const depositRes = await LENDING.deposit(depositAmount);
+    await depositRes.wait();
+
+    //borrow the USD from the Lending contract
     const borrowAmount = ethers.utils.parseUnits(usdAmount.toString(), 18).toString();
-    console.log(borrowAmount)
-    await LENDING.borrow(borrowAmount);
-    console.log('dddd')
+    const borrowRes = await LENDING.borrow(borrowAmount)
+        .then(async res => {
+            return res
+        });
+    await borrowRes.wait();
+    console.log('borrow completed.');
+    await updateBalance();
+    $('.loading').hide();
+}
+
+async function payback(myAddress, usdAmount) {
+    //calculate the actual payback in smalled
+    paybackAmount = ethers.utils.parseUnits(usdAmount.toString(), 18).toString();
+    const approveRes = await USD.approve(LENDING_TOKEN_ADDRESS, paybackAmount);
+    await approveRes.wait();
+    const paybackRes = await LENDING.repay(paybackAmount);
+    await paybackRes.wait();
+    console.log('payback completed.');
+    await updateBalance();
+    $('.loading').hide();
 }

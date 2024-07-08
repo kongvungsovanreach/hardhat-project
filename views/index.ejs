@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    <div class="loading">Loading&#8230;</div>
     <div class="container" id="top-container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
@@ -44,10 +45,10 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
+                            <td id="stone-balance">
                                 <%= balance.stone %>
                             </td>
-                            <td>
+                            <td id="usd-balance">
                                 <%= balance.usd %>
                             </td>
                         </tr>
@@ -56,10 +57,12 @@
             </div>
         </div>
         <div class="col-md-6 offset-md-3" id="transaction-wrapper">
-            <h3 class="text-center">Transaction (Borrowing)</h3>
-            <input type="text" class="form-control" id="borrow-amount" value="100">
+            <h3 class="text-center">Transaction (Borrow / Payback)</h3>
+            <input type="text" class="form-control" id="borrow-payback-amount" value="100">
+            <h5 class="text-center" id="required-collateral">Required collateral: <span>0</span> STONE</h5>
             <div id="transaction-btn-wrapper">
                 <button class="btn btn-success" id="borrow-btn">Borrow USD</button>
+                <button class="btn btn-info" id="payback-btn">Payback USD</button>
             </div>
         </div>
     </div>

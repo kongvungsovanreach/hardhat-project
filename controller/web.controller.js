@@ -7,10 +7,12 @@ require('dotenv').config({ path: "../env_files/dapp.env" });
 
 /* Get dashboard for user */
 exports.getDashboard = async (req, res, next) => {
-  const balance = await web3Service.checkBalance('0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199');
+  const currentUserAddress = req.user[0].address;
+  const balance = await web3Service.checkBalance(currentUserAddress);
   res.render('index', {
     user: {
-      email: 'kongvungsovanreach'
+      email: 'kongvungsovanreach',
+      adress: currentUserAddress
     },
     balance: balance,
     title: process.env.SITE_NAME

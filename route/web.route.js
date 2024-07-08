@@ -8,7 +8,7 @@ const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth/au
 
 
 /* Connect route to controller */
-router.get('/dashboard', webController.getDashboard);
+router.get('/dashboard', ensureAuthenticated, webController.getDashboard);
 router.get('/login', forwardAuthenticated, webController.getLoginPage);
 router.get('/signup', forwardAuthenticated, webController.getSignupPage);
 router.post('/login', webController.loginAction);

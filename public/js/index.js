@@ -1,15 +1,37 @@
 $(document).ready(async () => {
-    let activeAccount = await getCurrentAccount();
+    await initWebpage();
+    await verifyCurrentAddress();
+
     // const balance = await getBalance('stone', '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199');
+})
 
+const updateBalance = async () => {
+    let activeAccount = await getCurrentAccount(); // get current account
+    if(activeAccount != null) {
+        const stoneBalance = await getBalance('stone', activeAccount);
+        const usdBalance = await getBalance('usd', activeAccount);
+        $('#stone-balance').text(formatNumberWithCommas(parseFloat(stoneBalance).toFixed(2)));
+        $('#usd-balance').text(formatNumberWithCommas(parseFloat(usdBalance).toFixed(2)));
+    }
+    $('.loading').hide();
+}
 
+const verifyCurrentAddress = async () => {
+    const addressFromServer = $('#active-account-address').text();
+    const activeAccount = await getCurrentAccount();
+    
+    if(addressFromServer != activeAccount) {
+        $('#active-account-address').text(activeAccount);
+    }
+    updateBalance();
+}
 
-
-
-
+const initWebpage = async () => {
+    let activeAccount = await getCurrentAccount(); // get current account
+    //set the display account address
     $('span#active-account-address').text(activeAccount ? activeAccount : '0x...');
-    document.getElementById("borrow-amount").addEventListener("input", handleInputChange);
-
+    //add event listener to borrow input (format with comma for styling)
+    document.getElementById("borrow-payback-amount").addEventListener("input", handleInputChange);
     //check metamask connection
     await metamaskConnected().then(res => {
         if (res) {
@@ -26,12 +48,38 @@ $(document).ready(async () => {
     //connect button handler function
     const connectMetamaskBtn = $('#connect-mm-btn');
     connectMetamaskBtn.on('click', async () => {
-        await connectToMetaMask().then(res => {
-            $('.not-connect-msg').hide();
-        }).catch(err => {
-
-        })
+        await connectToMetaMask()
+            .then(res => {
+                $('.not-connect-msg').hide();
+            })
+            .catch(err => {
+                console.log('[err]: error connecting to Metamask.')
+            })
     })
+
+    //borrow button handler function
+    const borrowBtn = $('#borrow-btn');
+    borrowBtn.on('click', async () => {
+        let borrowAmount = $('#borrow-payback-amount').val();
+        borrowAmount = parseFloat(borrowAmount.replace(/,/g, ''));
+        $('.loading').show();
+        await borrow(activeAccount, borrowAmount);
+    })
+
+    //repay button handler function
+    const paybackBtn = $('#payback-btn');
+    paybackBtn.on('click', async () => {
+        let paybackAmount = $('#borrow-payback-amount').val();
+        paybackAmount = parseFloat(paybackAmount.replace(/,/g, ''));
+        $('.loading').show();
+        await payback(activeAccount, paybackAmount);
+    })
+
+    //add event listener to the borrow input for updateing collateral amount
+    $('#borrow-payback-amount').on('input', () => {
+        const reqiured_collateral = cal_collateral(borrowAmount.val(), true);
+        $('#required-collateral span').text(reqiured_collateral);
+    });
 
     //disconnect button handler function
     const disconnectMetamaskBtn = $('#disconnect-mm-btn');
@@ -40,25 +88,41 @@ $(document).ready(async () => {
         showToast('[msg]: user must disconnect using extension itself.', '#28a745');
     })
 
-    //borrow button handler function
-    const borrowBtn = $('#borrow-btn');
-    borrowBtn.on('click', async () => {
-        let borrowAmount = $('#borrow-amount').val();
-        borrowAmount = parseFloat(borrowAmount.replace(/,/g, ''));
-        await borrow(activeAccount, borrowAmount)
-    })
-})
+    //for predefined borrow and collateral amount
+    const borrowAmount = $('#borrow-payback-amount');
+    if (borrowAmount.val() != '') {
+        $('#required-collateral').show();
+    }
+    const reqiured_collateral = cal_collateral($('#borrow-payback-amount').val(), true);
+    $('#required-collateral span').text(reqiured_collateral);
+}
+
+const cal_collateral = (usd, withComma=false) => {
+    const STONE_PRICE = 7524;
+    const COLLATERALIZATION_RATIO = 666;
+    let value = usd.replace(/,/g, ""); // Remove existing commas
+    let collateral = (value * 10000 * 1000) / (STONE_PRICE * COLLATERALIZATION_RATIO);
+    // collateral = ethers.utils.parseUnits(collateral.toString(), 18).toString();
+    if(withComma){
+        collateral = formatNumberWithCommas(collateral.toFixed(2));
+        return collateral;
+    }else{
+        return collateral.toFixed(18);
+    }
+    
+}
 
 //add acount change listener
 const accountChangeListener = () => {
     // Listen for account changes
-    window.ethereum.on('accountsChanged', (accounts) => {
+    window.ethereum.on('accountsChanged', async (accounts) => {
         if (accounts.length === 0) {
             console.log('No accounts available');
         } else {
             // Update the current account
             activeAccount = accounts[0];
             $('span#active-account-address').text(activeAccount);
+            await updateBalance();
             console.log('Account changed:', activeAccount);
         }
     });
@@ -84,7 +148,7 @@ const getCurrentAccount = async () => {
     } else {
         showToast('[err]: metamask is not connected.');
     }
-    return accounts.length ? accounts[0] : null
+    return accounts.length ? accounts[0] : null;
 }
 
 //show toast message
@@ -98,7 +162,7 @@ const showToast = (msg, bgColor = '#ff0000') => {
 
 //check if metamask is already installed
 const metamaskInstalled = async () => {
-    return window.ethereum
+    return window.ethereum;
 }
 
 //check if metamask is connected
@@ -164,18 +228,16 @@ async function disconnectFromMetaMask() {
     }
 }
 
-// Function to format number with commas
+//function to format number with commas
 function formatNumberWithCommas(number) {
-    // Convert number to string and split into parts
     let parts = number.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // Join parts and return formatted number
     return parts.join(".");
 }
 
-// Function to handle input change
+//function to handle input change
 function handleInputChange() {
-    let inputElement = document.getElementById("borrow-amount");
-    let value = inputElement.value.replace(/,/g, ""); // Remove existing commas
-    inputElement.value = formatNumberWithCommas(value); // Format with commas
+    let inputElement = document.getElementById("borrow-payback-amount");
+    let value = inputElement.value.replace(/,/g, ""); //remove existing commas
+    inputElement.value = formatNumberWithCommas(value); //format with commas
 }

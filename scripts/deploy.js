@@ -14,23 +14,13 @@ async function deployTokenContract(contractName, initialSupply) {
         .then((res) =>  res)
         .catch(err => xerr('error deploying contract.'));
 
-    // const [deployer] = await hre.ethers.getSigners();
-    // console.log("Deploying contracts with the account:", deployer.address);
-
-    // // initialSupply = ethers.utils.parseUnits(initialSupply, 18); // 1 million tokens with 18 decimals
-    // const Stone = await hre.ethers.getContractFactory("STONE");
-    // const stone = await Stone.deploy(initialSupply);
-
-    // await stone.deployed();
-    // console.log("STONE deployed to:", stone.address);
-
     xmsg(`contract deployed to addess "${Token.target}"`);
     return Token
 }
 
 async function run_main() {
     //constant variables
-    const [deployer] = await hre.ethers.getSigners();
+    const [deployer, ...accounts] = await hre.ethers.getSigners();
     xmsg(`deployer address: ${deployer.address}`);
 
     //deploy stone token contract
@@ -56,27 +46,91 @@ async function run_main() {
         .catch(err => xerr('error deploying contract.'));
     xmsg(`contract deployed to addess "${Lending.target}"`);
     
-    const getBalance = async (pretext, address) => {
-        const usdBalance = await USD.balanceOf(address);
-        const stoneBalance = await STONE.balanceOf(address);
-        xmsg(`${pretext} => USD: ${usdBalance.toString()} | STONE: ${stoneBalance}`)
+    // const getBalance = async (pretext, address) => {
+    //     const usdBalance = await USD.balanceOf(address);
+    //     const stoneBalance = await STONE.balanceOf(address);
+    //     xmsg(`${pretext} => USD: ${usdBalance.toString()} | STONE: ${stoneBalance}`)
+    // }
+
+    //init balance into contract
+    const INIT_LENDING_USD = ethers.parseUnits('8000', 18).toString();
+    await USD.transfer(Lending.target, INIT_LENDING_USD)
+        .then((res) =>  res)
+        .catch(err => xerr('error init Lending with USD.'));;
+    
+    //init ALICE with STONE
+    // const ALICE_ADDRESS = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+    const INIT_STONE_BALANCE = ethers.parseUnits('30000', 18).toString();
+
+    for (const [index, account] of accounts.slice(0, 19).entries()) {
+        console.log(`Init balance account ${index + 1}: ${account.address}`);
+        await STONE.transfer(account.address, INIT_STONE_BALANCE)
+            .then((res) =>  {
+                xmsg('init successfully.');
+            })
+            .catch(err => {
+                xerr('error init ALICE with STONE.')
+                console.log(err)
+            });
     }
+    // accounts.slice(0, 19).forEach(async (account, index) => {
+    //     console.log(`Init balance account ${index + 1}: ${account.address}`);
+    //     await STONE.transfer(account.address, INIT_STONE_BALANCE)
+    //         .then((res) =>  {
+                
+    //             console.log(res)
+    //         })
+    //         .catch(err => {
+    //             xerr('error init ALICE with STONE.')
+    //             console.log(err)
+    //         });
+    //         console.log('jajaja')
+    // });
 
+    
+    console.log('Deployment completed.')
     //init balance for borrower
-    const ALICE = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
-    const borrowerSTONE = ethers.parseUnits('25000', 18).toString();
-    const borrowerUSD = ethers.parseUnits('3600', 18).toString();
-    await STONE.transfer(ALICE, borrowerSTONE).then(res =>  {
-        // console.log(res)
-    }).catch(err => {
-        console.log(err)
-    })
-    await USD.transfer(ALICE, borrowerUSD).then(res =>  {
-        // console.log(res)
-    }).catch(err => {
-        console.log(err)
-    })
+    
+    // const ALICE_STONE = ethers.parseUnits('25000', 18).toString();
+    // const ALICE_USD = ethers.parseUnits('3600', 18).toString();
+    // await STONE.transfer(ALICE, ALICE_STONE).then(res =>  {
+    //     // console.log(res)
+    // }).catch(err => {
+    //     console.log(err)
+    // })
+    // await USD.transfer(ALICE, ALICE_USD).then(res =>  {
+    //     // console.log(res)
+    // }).catch(err => {
+    //     console.log(err)
+    // })
 
+    
+    
+    // console.log('aaa')
+    // await STONE.approve(Lending.target, "5000000000000000000000").then(res =>  {
+    //     // console.log(res)
+    // }).catch(err => {
+    //     console.log(err)
+    // })
+    // await Lending.deposit('5000000000000000000000').then(res =>  {
+    //     console.log(res)
+    // }).catch(err => {
+    //     console.log(err)
+    // })
+
+    // await USD.transfer(Lending.target, '100000000000000000000').then(res =>  {
+    //     // console.log(res)
+    // }).catch(err => {
+    //     console.log(err)
+    // })
+
+    // console.log('bbb')
+    // await Lending.borrow('100000000000000000000').then(res =>  {
+    //     console.log(res)
+    // }).catch(err => {
+    //     console.log(err)
+    // })
+    // console.log('ccc')
     //transfer USD to Lending
     // const usdAmount = ethers.parseUnits('3600', 18).toString();
     // await USD.transfer(Lending.target, usdAmount)
@@ -84,7 +138,7 @@ async function run_main() {
 
     // const ALICE = "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199";
 
-    // //deposit STONE to ALICE
+    //deposit STONE to ALICE
     // const stoneAmount = ethers.parseUnits('25000', 18).toString();
     // await STONE.transfer(ALICE, stoneAmount)
     // await getBalance('02. ALICE', ALICE)

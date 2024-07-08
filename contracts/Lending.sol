@@ -12,10 +12,10 @@ contract Lending {
     IERC20 public USD;
     address public owner;
     uint256 public constant COLLATERALIZATION_RATIO = 666; // 66.6% 담보 비율 (1000 = 100%)
-    uint256 public constant T_GPC_PRICE = 7524; // tGPC의 가격 (소수점 4자리)
+    uint256 public constant STONE_PRICE = 7524; // tGPC의 가격 (소수점 4자리)
 
-    mapping(address => uint256) public tGPCBalances;
-    mapping(address => uint256) public tUSDTLoans;
+    mapping(address => uint256) public STONEBalance;
+    mapping(address => uint256) public USDLoan;
 
     event Deposited(address indexed user, uint256 amount);
     event Loaned(address indexed user, uint256 amount);
@@ -30,37 +30,47 @@ contract Lending {
         require(amount > 0, "Amount must be greater than 0");
         require(STONE.transferFrom(msg.sender, address(this), amount), "Transfer fail");
 
-        tGPCBalances[msg.sender] += amount;
+        STONEBalance[msg.sender] += amount;
         emit Deposited(msg.sender, amount);
     }
 
-    function borrow(uint256 tUSDTAmount) external {
-        uint256 requiredCollateral = getCollateralAmount(tUSDTAmount);
-        console.log(tUSDTAmount);
+    function borrow(uint256 USDAmount) external {
+        console.log('===> borrow function');
+        console.log(msg.sender);
+        uint256 requiredCollateral = getCollateralAmount(USDAmount);
         console.log(requiredCollateral);
-        console.log(tGPCBalances[msg.sender]);
-        require(tGPCBalances[msg.sender] >= requiredCollateral, "Not enough collateral");
-
-        tGPCBalances[msg.sender] -= requiredCollateral;
-        tUSDTLoans[msg.sender] += tUSDTAmount;
-        require(USD.transfer(msg.sender, tUSDTAmount), "Transfer failed");
-
-        emit Loaned(msg.sender, tUSDTAmount);
+        console.log(STONEBalance[msg.sender]);
+        require(STONEBalance[msg.sender] >= requiredCollateral, "Not enough collateral");
+        console.log(STONEBalance[msg.sender]);
+        console.log(requiredCollateral);
+        STONEBalance[msg.sender] -= requiredCollateral;
+        USDLoan[msg.sender] += USDAmount;
+        require(USD.transfer(msg.sender, USDAmount), "Transfer failed");
+        
+        console.log(STONEBalance[msg.sender]);
+        emit Loaned(msg.sender, USDAmount);
     }
 
-    function getCollateralAmount(uint256 tUSDTAmount) public pure returns (uint256) {
-        return (tUSDTAmount * 10000 * 1000) / (T_GPC_PRICE * COLLATERALIZATION_RATIO);
+    function getCollateralAmount(uint256 USDAmount) public pure returns (uint256) {
+        return (USDAmount * 10000 * 1000) / (STONE_PRICE * COLLATERALIZATION_RATIO);
     }
 
     // repay: tUSDT 대출금을 상환하면 담보물인 tGPC를 되돌려준다.
-    function repay(uint256 tUSDTAmount) external {
-        require(tUSDTLoans[msg.sender] >= tUSDTAmount, "Not enough loan amount");
+    function repay(uint256 USDAmount) external {
+        require(USDLoan[msg.sender] >= USDAmount, "Not enough loan amount");
 
-        uint256 requiredCollateral = getCollateralAmount(tUSDTAmount);
-        tUSDTLoans[msg.sender] -= tUSDTAmount;
-        tGPCBalances[msg.sender] += requiredCollateral;
-        require(USD.transferFrom(msg.sender, address(this), tUSDTAmount), "Transfer failed");
+        uint256 requiredCollateral = getCollateralAmount(USDAmount);
+        console.log('==> repay function');
+        console.log(msg.sender);
+        console.log(requiredCollateral);
+        console.log(STONEBalance[msg.sender]);
+        
+        USDLoan[msg.sender] -= USDAmount;
+        STONEBalance[msg.sender] += requiredCollateral;
+        console.log(STONEBalance[msg.sender]);
+        require(USD.transferFrom(msg.sender, address(this), USDAmount), "Transfer failed");
+        require(STONE.transfer(msg.sender, requiredCollateral), "STONE transfer failed");
 
-        emit Loaned(msg.sender, tUSDTAmount);
+        emit Loaned(msg.sender, USDAmount);
     }
 }
