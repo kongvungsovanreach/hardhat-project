@@ -21,7 +21,7 @@ const verifyCurrentAddress = async () => {
     const activeAccount = await getCurrentAccount();
     
     if(addressFromServer != activeAccount) {
-        $('#active-account-address').text(activeAccount);
+        $('#active-account-address').text(activeAccount ? activeAccount : '0x...');
     }
     updateBalance();
 }
@@ -146,7 +146,7 @@ const getCurrentAccount = async () => {
             showToast('[err]: error retrieving account from metamask.');
         }
     } else {
-        showToast('[err]: metamask is not connected.');
+        // showToast('[err]: metamask is not connected.');
     }
     return accounts.length ? accounts[0] : null;
 }
