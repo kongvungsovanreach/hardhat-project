@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 // Uncomment this line to use console.log
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -35,19 +35,12 @@ contract Lending {
     }
 
     function borrow(uint256 USDAmount) external {
-        console.log('===> borrow function');
-        console.log(msg.sender);
         uint256 requiredCollateral = getCollateralAmount(USDAmount);
-        console.log(requiredCollateral);
-        console.log(STONEBalance[msg.sender]);
         require(STONEBalance[msg.sender] >= requiredCollateral, "Not enough collateral");
-        console.log(STONEBalance[msg.sender]);
-        console.log(requiredCollateral);
         STONEBalance[msg.sender] -= requiredCollateral;
         USDLoan[msg.sender] += USDAmount;
         require(USD.transfer(msg.sender, USDAmount), "Transfer failed");
         
-        console.log(STONEBalance[msg.sender]);
         emit Loaned(msg.sender, USDAmount);
     }
 
@@ -60,14 +53,10 @@ contract Lending {
         require(USDLoan[msg.sender] >= USDAmount, "Not enough loan amount");
 
         uint256 requiredCollateral = getCollateralAmount(USDAmount);
-        console.log('==> repay function');
-        console.log(msg.sender);
-        console.log(requiredCollateral);
-        console.log(STONEBalance[msg.sender]);
         
         USDLoan[msg.sender] -= USDAmount;
         STONEBalance[msg.sender] += requiredCollateral;
-        console.log(STONEBalance[msg.sender]);
+
         require(USD.transferFrom(msg.sender, address(this), USDAmount), "Transfer failed");
         require(STONE.transfer(msg.sender, requiredCollateral), "STONE transfer failed");
 
